@@ -1,14 +1,22 @@
 name: CD - Deploy to Development
 
+# This workflow is triggered by the CI workflow after all tests pass
+# Workflow dependency: CI - Validate and Test → Deploy to Development → Run Integration Tests
 on:
-  push:
-    branches: [ develop ]
+  workflow_run:
+    workflows: ["CI - Validate and Test"]
+    types:
+      - completed
+    branches: 
+      - develop
   workflow_dispatch:
 
 jobs:
   deploy-dev:
     name: Deploy to Development
     runs-on: ubuntu-latest
+    # Only deploy if CI passed successfully
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     environment: development
     
     steps:
@@ -28,15 +36,15 @@ jobs:
         run: |
           databricks bundle validate -t dev
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_DEV }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Deploy bundle to dev
         run: |
           databricks bundle deploy -t dev
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_DEV }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Create deployment summary
         run: |
@@ -66,8 +74,8 @@ jobs:
         run: |
           databricks bundle run daily_etl_job -t dev
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_DEV }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Verify DLT pipeline
         run: |

@@ -5,7 +5,6 @@ resources:
     # Main DLT Pipeline
     retail_dlt_pipeline:
       name: retail_dlt_pipeline
-      description: "Delta Live Tables pipeline for retail analytics"
       
       target: ${var.catalog_name}.${var.schema_name}
       
@@ -36,13 +35,6 @@ resources:
       channel: "CURRENT"
       edition: "ADVANCED"
       photon: true
-
-      notifications:
-        alerts:
-          - "on-update-failure"
-          - "on-flow-failure"
-        email_recipients:
-          - ${var.notification_email}
 
 variables:
   catalog_name:

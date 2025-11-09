@@ -65,7 +65,6 @@ resources:
           - ${var.notification_email}
 
       timeout_seconds: 3600
-      max_retries: 2
 
     # Weekly Analytics Job
     weekly_analytics_job:
