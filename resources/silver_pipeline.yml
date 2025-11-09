@@ -1,0 +1,14 @@
+# Silver Layer Pipeline - Data validation and cleaning
+# Reads from bronze tables and applies quality checks
+# Depends on bronze_pipeline
+
+resources:
+  pipelines:
+    silver_pipeline:
+      name: retail_silver_pipeline
+      catalog: ${var.catalog}
+      schema: silver
+      serverless: true
+      libraries:
+        - file:
+            path: ../src/ETL/silver.py

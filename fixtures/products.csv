@@ -1,0 +1,11 @@
+ProductID,Category,Brand,ProductName,BasePrice
+P001,Electronics,TechBrand,Wireless Mouse,29.99
+P002,Electronics,TechBrand,Mechanical Keyboard,49.99
+P003,Accessories,AccessoryBrand,USB-C Cable,19.99
+P004,Accessories,AccessoryBrand,Phone Stand,15.99
+P005,Premium,PremiumBrand,Noise Cancelling Headphones,89.99
+P006,Electronics,TechBrand,USB Hub,34.99
+P007,Accessories,AccessoryBrand,Cable Organizer,9.99
+P008,Premium,PremiumBrand,Wireless Charger,59.99
+P009,Electronics,TechBrand,Screen Protector,12.99
+P010,Accessories,AccessoryBrand,Laptop Bag,45.99

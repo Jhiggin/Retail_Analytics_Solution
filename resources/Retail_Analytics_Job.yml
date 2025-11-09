@@ -1,0 +1,51 @@
+# Orchestration job that chains Bronze → Silver → Gold pipelines
+# This job runs the complete medallion architecture pipeline sequence
+# Runs on a daily schedule in production mode
+# (schedule is paused automatically in development mode)
+
+resources:
+  jobs:
+    retail_analytics_orchestration:
+      name: retail_analytics_orchestration
+      description: "Orchestrates the complete data pipeline: Bronze → Silver → Gold"
+
+      # Trigger the job every 24 hours
+      # See: https://docs.databricks.com/api/workspace/jobs/create#trigger
+      trigger:
+        periodic:
+          interval: 1
+          unit: DAYS
+
+      # Optional: Enable email notifications on failure
+      # email_notifications:
+      #   on_failure:
+      #     - your_email@example.com
+
+      tasks:
+        # Task 1: Run Bronze Pipeline (Raw Data Ingestion)
+        - task_key: bronze_pipeline_task
+          description: "Run Bronze Pipeline - Ingest raw data from ADLS"
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.bronze_pipeline.id}
+
+        # Task 2: Run Silver Pipeline (depends on Bronze completion)
+        - task_key: silver_pipeline_task
+          description: "Run Silver Pipeline - Validate and clean data"
+          depends_on:
+            - task_key: bronze_pipeline_task
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.silver_pipeline.id}
+
+        # Task 3: Run Gold Pipeline (depends on Silver completion)
+        - task_key: gold_pipeline_task
+          description: "Run Gold Pipeline - Create analytical views"
+          depends_on:
+            - task_key: silver_pipeline_task
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.gold_pipeline.id}
+
+      # Environment configuration
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "2"
