@@ -29,30 +29,19 @@ jobs:
           python-version: '3.10'
 
       - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: latest
-          virtualenvs-create: false
-
-      - name: Verify Poetry installation
-        run: poetry --version
-
-      - name: Create Poetry wrapper for databricks
-        run: |
-          mkdir -p .databricks/bin
-          echo '#!/bin/bash' > .databricks/bin/poetry
-          echo "exec $(which poetry) \"\$@\"" >> .databricks/bin/poetry
-          chmod +x .databricks/bin/poetry
-          export PATH="$(pwd)/.databricks/bin:$PATH"
-          .databricks/bin/poetry --version
+        run: curl -sSL https://install.python-poetry.org | python3 -
 
       - name: Install Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Build bundle
         run: |
-          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+          databricks bundle build
 
       - name: Validate bundle
         run: |
-          export PATH="$(pwd)/.databricks/bin:$PATH"
+          export PATH="$HOME/.local/bin:$PATH"
           databricks bundle validate -t dev
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
@@ -60,7 +49,7 @@ jobs:
 
       - name: Deploy bundle to dev
         run: |
-          export PATH="$(pwd)/.databricks/bin:$PATH"
+          export PATH="$HOME/.local/bin:$PATH"
           databricks bundle deploy -t dev
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
