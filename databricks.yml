@@ -12,8 +12,9 @@ include:
 variables:
   catalog:
     description: The catalog to use
-  schema:
-    description: The schema to use
+  compute_cluster_id:
+    description: Compute cluster ID for running notebooks
+    default: ""
 
 targets:
   dev:

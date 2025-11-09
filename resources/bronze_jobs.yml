@@ -1,0 +1,42 @@
+# Bronze Layer Jobs - Ingest raw data from ADLS
+resources:
+  jobs:
+    bronze_sales:
+      name: bronze_sales
+      description: "Ingest raw sales data from ADLS into bronze.sales"
+      tasks:
+        - task_key: bronze_sales_task
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/01_bronze_sales
+            base_parameters:
+              catalog: ${var.catalog}
+
+    bronze_products:
+      name: bronze_products
+      description: "Ingest raw products data from ADLS into bronze.products"
+      tasks:
+        - task_key: bronze_products_task
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/02_bronze_products
+            base_parameters:
+              catalog: ${var.catalog}
+
+    bronze_stores:
+      name: bronze_stores
+      description: "Ingest raw stores data from ADLS into bronze.stores"
+      tasks:
+        - task_key: bronze_stores_task
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/03_bronze_stores
+            base_parameters:
+              catalog: ${var.catalog}
+
+    bronze_promotions:
+      name: bronze_promotions
+      description: "Ingest raw promotions data from ADLS into bronze.promotions"
+      tasks:
+        - task_key: bronze_promotions_task
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/04_bronze_promotions
+            base_parameters:
+              catalog: ${var.catalog}

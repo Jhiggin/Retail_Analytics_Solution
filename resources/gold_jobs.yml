@@ -1,0 +1,62 @@
+# Gold Layer Jobs - Build Kimball star schema and analytics
+resources:
+  jobs:
+    gold_dim_date:
+      name: gold_dim_date
+      description: "Create date dimension table"
+      tasks:
+        - task_key: gold_dim_date_task
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/09_gold_dim_date
+            base_parameters:
+              catalog: ${var.catalog}
+
+    gold_dim_product:
+      name: gold_dim_product
+      description: "Create product dimension table"
+      tasks:
+        - task_key: gold_dim_product_task
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/10_gold_dim_product
+            base_parameters:
+              catalog: ${var.catalog}
+
+    gold_dim_store:
+      name: gold_dim_store
+      description: "Create store dimension table"
+      tasks:
+        - task_key: gold_dim_store_task
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/11_gold_dim_store
+            base_parameters:
+              catalog: ${var.catalog}
+
+    gold_dim_promotion:
+      name: gold_dim_promotion
+      description: "Create promotion dimension table"
+      tasks:
+        - task_key: gold_dim_promotion_task
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/12_gold_dim_promotion
+            base_parameters:
+              catalog: ${var.catalog}
+
+    gold_fact_sales:
+      name: gold_fact_sales
+      description: "Create sales fact table with dimension keys"
+      tasks:
+        - task_key: gold_fact_sales_task
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/13_gold_fact_sales
+            base_parameters:
+              catalog: ${var.catalog}
+
+    gold_analytics_views:
+      name: gold_analytics_views
+      description: "Create analytics views using star schema"
+      tasks:
+        - task_key: gold_analytics_views_task
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/14_gold_analytics_views
+            base_parameters:
+              catalog: ${var.catalog}
