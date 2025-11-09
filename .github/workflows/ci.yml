@@ -122,3 +122,17 @@ jobs:
           if [ -f requirements.txt ]; then
             safety check --file requirements.txt
           fi
+
+  trigger-deploy:
+    name: Trigger Deployment
+    needs: [validate, lint, unit-tests, security-scan]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    
+    steps:
+      - name: Trigger deployment workflow
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: deploy-dev
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
