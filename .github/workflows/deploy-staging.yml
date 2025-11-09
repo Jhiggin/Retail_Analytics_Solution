@@ -28,15 +28,15 @@ jobs:
         run: |
           databricks bundle validate -t staging
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_STAGING }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_STAGING }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Deploy bundle to staging
         run: |
           databricks bundle deploy -t staging
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_STAGING }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_STAGING }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Create deployment summary
         run: |
@@ -72,5 +72,5 @@ jobs:
           echo "Running smoke tests in staging..."
           # Add smoke test commands here
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_STAGING }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_STAGING }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}

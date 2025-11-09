@@ -1,18 +1,17 @@
 # Development Environment Configuration
 
 # Databricks workspace
-databricks_host_dev: "https://your-workspace-dev.cloud.databricks.com"
+databricks_host_dev: "https://adb-4220674337023826.6.azuredatabricks.net/"
 
 # Unity Catalog
 catalog_name: "retail_analytics_dev"
 schema_name: "analytics"
 
 # Service Principal (for testing service principal auth)
-service_principal_staging: ""
-service_principal_prod: ""
+service_principal_dev: "sp-databricks-dev@yourdomain.com"
 
 # Notification settings
-notification_email: "dev-team@example.com"
+notification_email: "joshua.higginbotham@codenamesql.com"
 
 # Data paths
 raw_data_path: "/mnt/dev/raw_data"
