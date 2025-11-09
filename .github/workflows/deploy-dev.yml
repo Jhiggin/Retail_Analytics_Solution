@@ -1,7 +1,12 @@
 name: CD - Deploy to Development
 
+# This workflow runs AFTER the CI workflow completes successfully
+# Workflow dependency: CI - Validate and Test → Deploy to Development → Run Integration Tests
 on:
-  push:
+  workflow_run:
+    workflows: ["CI - Validate and Test"]
+    types:
+      - completed
     branches: [ develop ]
   workflow_dispatch:
 
@@ -9,6 +14,10 @@ jobs:
   deploy-dev:
     name: Deploy to Development
     runs-on: ubuntu-latest
+    # Only deploy if CI passed or if manually triggered
+    if: |
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      github.event_name == 'workflow_dispatch'
     environment: development
     
     steps:
