@@ -44,6 +44,7 @@ jobs:
 
       - name: Validate bundle
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           databricks bundle validate -t dev
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
@@ -51,6 +52,7 @@ jobs:
 
       - name: Deploy bundle to dev
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           databricks bundle deploy -t dev
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
