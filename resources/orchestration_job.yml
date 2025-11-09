@@ -1,10 +1,13 @@
 # Master Orchestration Job - Runs complete medallion architecture
 # Bronze → Silver → Gold pipeline sequence
+# Note: This job runs individual notebook tasks directly rather than delegating to sub-jobs
+# For simpler orchestration, you can trigger individual jobs manually or use a scheduling tool
+
 resources:
   jobs:
-    retail_analytics_orchestration:
-      name: retail_analytics_orchestration
-      description: "Master job orchestrating Bronze → Silver → Gold pipeline"
+    retail_analytics_bronze:
+      name: retail_analytics_bronze
+      description: "Bronze layer orchestration - runs 4 parallel data ingestion jobs"
 
       # Daily schedule in production, paused in development
       trigger:
@@ -12,95 +15,113 @@ resources:
           interval: 1
           unit: DAYS
 
-      # Email notifications on failure (optional)
-      # email_notifications:
-      #   on_failure:
-      #     - your_email@example.com
-
       tasks:
-        # ===== BRONZE LAYER TASKS =====
         - task_key: bronze_sales
           description: "Ingest raw sales data from ADLS"
-          job_task:
-            job_id: ${resources.jobs.bronze_sales.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/01_bronze_sales
+            base_parameters:
+              catalog: ${var.catalog}
 
         - task_key: bronze_products
           description: "Ingest raw products data from ADLS"
-          job_task:
-            job_id: ${resources.jobs.bronze_products.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/02_bronze_products
+            base_parameters:
+              catalog: ${var.catalog}
 
         - task_key: bronze_stores
           description: "Ingest raw stores data from ADLS"
-          job_task:
-            job_id: ${resources.jobs.bronze_stores.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/03_bronze_stores
+            base_parameters:
+              catalog: ${var.catalog}
 
         - task_key: bronze_promotions
           description: "Ingest raw promotions data from ADLS"
-          job_task:
-            job_id: ${resources.jobs.bronze_promotions.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/04_bronze_promotions
+            base_parameters:
+              catalog: ${var.catalog}
 
-        # ===== SILVER LAYER TASKS (depend on bronze completion) =====
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "2"
+
+    retail_analytics_silver:
+      name: retail_analytics_silver
+      description: "Silver layer orchestration - runs 4 parallel validation jobs"
+
+      tasks:
         - task_key: silver_sales
           description: "Validate and clean sales data"
-          depends_on:
-            - task_key: bronze_sales
-            - task_key: bronze_products
-            - task_key: bronze_stores
-            - task_key: bronze_promotions
-          job_task:
-            job_id: ${resources.jobs.silver_sales.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/05_silver_sales
+            base_parameters:
+              catalog: ${var.catalog}
 
         - task_key: silver_products
           description: "Validate and clean products data"
-          depends_on:
-            - task_key: bronze_products
-          job_task:
-            job_id: ${resources.jobs.silver_products.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/06_silver_products
+            base_parameters:
+              catalog: ${var.catalog}
 
         - task_key: silver_stores
           description: "Validate and clean stores data"
-          depends_on:
-            - task_key: bronze_stores
-          job_task:
-            job_id: ${resources.jobs.silver_stores.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/07_silver_stores
+            base_parameters:
+              catalog: ${var.catalog}
 
         - task_key: silver_promotions
           description: "Validate and clean promotions data"
-          depends_on:
-            - task_key: bronze_promotions
-          job_task:
-            job_id: ${resources.jobs.silver_promotions.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/08_silver_promotions
+            base_parameters:
+              catalog: ${var.catalog}
 
-        # ===== GOLD LAYER DIMENSION TASKS (depend on silver) =====
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "2"
+
+    retail_analytics_gold:
+      name: retail_analytics_gold
+      description: "Gold layer orchestration - builds dimensions, fact, and views"
+
+      tasks:
+        # Dimensions in parallel
         - task_key: gold_dim_date
           description: "Build date dimension"
-          depends_on:
-            - task_key: silver_sales
-          job_task:
-            job_id: ${resources.jobs.gold_dim_date.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/09_gold_dim_date
+            base_parameters:
+              catalog: ${var.catalog}
 
         - task_key: gold_dim_product
           description: "Build product dimension"
-          depends_on:
-            - task_key: silver_products
-          job_task:
-            job_id: ${resources.jobs.gold_dim_product.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/10_gold_dim_product
+            base_parameters:
+              catalog: ${var.catalog}
 
         - task_key: gold_dim_store
           description: "Build store dimension"
-          depends_on:
-            - task_key: silver_stores
-          job_task:
-            job_id: ${resources.jobs.gold_dim_store.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/11_gold_dim_store
+            base_parameters:
+              catalog: ${var.catalog}
 
         - task_key: gold_dim_promotion
           description: "Build promotion dimension"
-          depends_on:
-            - task_key: silver_promotions
-          job_task:
-            job_id: ${resources.jobs.gold_dim_promotion.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/12_gold_dim_promotion
+            base_parameters:
+              catalog: ${var.catalog}
 
-        # ===== GOLD LAYER FACT AND VIEWS (depend on dimensions) =====
+        # Fact table depends on dimensions
         - task_key: gold_fact_sales
           description: "Build sales fact table with dimension keys"
           depends_on:
@@ -108,15 +129,20 @@ resources:
             - task_key: gold_dim_product
             - task_key: gold_dim_store
             - task_key: gold_dim_promotion
-          job_task:
-            job_id: ${resources.jobs.gold_fact_sales.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/13_gold_fact_sales
+            base_parameters:
+              catalog: ${var.catalog}
 
+        # Analytics views depend on fact table
         - task_key: gold_analytics_views
           description: "Build analytics views using star schema"
           depends_on:
             - task_key: gold_fact_sales
-          job_task:
-            job_id: ${resources.jobs.gold_analytics_views.id}
+          notebook_task:
+            notebook_path: /Retail_Analytics_Solution/notebooks/14_gold_analytics_views
+            base_parameters:
+              catalog: ${var.catalog}
 
       environments:
         - environment_key: default
