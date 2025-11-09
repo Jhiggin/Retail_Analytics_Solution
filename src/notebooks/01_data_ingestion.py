@@ -6,10 +6,11 @@
 
 # COMMAND ----------
 
+from datetime import datetime
+
 # Import required libraries
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_timestamp, input_file_name
-from datetime import datetime
 
 # COMMAND ----------
 

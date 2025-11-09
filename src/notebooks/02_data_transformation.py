@@ -6,10 +6,10 @@
 
 # COMMAND ----------
 
+from delta.tables import DeltaTable
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-from delta.tables import DeltaTable
 
 # COMMAND ----------
 

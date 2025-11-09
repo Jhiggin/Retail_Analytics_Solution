@@ -6,9 +6,10 @@
 
 # COMMAND ----------
 
-import dlt
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
+
+import dlt
 
 # COMMAND ----------
 

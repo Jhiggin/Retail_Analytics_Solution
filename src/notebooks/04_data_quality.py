@@ -6,9 +6,10 @@
 
 # COMMAND ----------
 
+from datetime import datetime
+
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
-from datetime import datetime
 
 # COMMAND ----------
 
