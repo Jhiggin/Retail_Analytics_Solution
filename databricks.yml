@@ -13,12 +13,11 @@ workspace:
   # The root path in the Databricks workspace where bundle resources are deployed
   root_path: "~/.bundle/${bundle.name}/${bundle.target}"
 
-# Artifact configuration for uploading files
+# Artifact configuration for uploading files  
+# No build step - just upload Python source files directly
 artifacts:
   default:
-    type: whl
-    build: poetry build
-    path: .
+    path: src
 
 # Targets define different deployment environments
 targets:
