@@ -22,7 +22,7 @@ jobs:
       - name: Install Databricks CLI
         run: |
           pip uninstall -y databricks-cli
-          pip install 'databricks-cli>=0.17.0'
+          pip install databricks
 
       - name: Validate bundle configuration
         run: |
@@ -43,7 +43,7 @@ jobs:
       - name: Install Databricks CLI
         run: |
           pip uninstall -y databricks-cli
-          pip install 'databricks-cli>=0.17.0'
+          pip install databricks
 
       - name: Configure Databricks CLI
         env:
@@ -75,7 +75,7 @@ jobs:
       - name: Install Databricks CLI
         run: |
           pip uninstall -y databricks-cli
-          pip install 'databricks-cli>=0.17.0'
+          pip install databricks
 
       - name: Configure Databricks CLI
         env:
