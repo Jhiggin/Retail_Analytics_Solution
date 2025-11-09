@@ -22,11 +22,11 @@ jobs:
       - name: Install Databricks CLI
         run: |
           pip uninstall -y databricks-cli || true
-          pip install --no-cache-dir databricks
+          python -m pip install --upgrade --user databricks
 
       - name: Validate bundle configuration
         run: |
-          databricks bundle validate -C .
+          python -m databricks.cli bundle validate -C .
 
   deploy:
     needs: validate
@@ -43,7 +43,7 @@ jobs:
       - name: Install Databricks CLI
         run: |
           pip uninstall -y databricks-cli || true
-          pip install --no-cache-dir databricks
+          python -m pip install --upgrade --user databricks
 
       - name: Configure Databricks CLI
         env:
@@ -58,7 +58,7 @@ jobs:
 
       - name: Deploy to Production
         run: |
-          databricks bundle deploy -C . --target prod
+          python -m databricks.cli bundle deploy -C . --target prod
 
   test-pipelines:
     needs: deploy
@@ -75,7 +75,7 @@ jobs:
       - name: Install Databricks CLI
         run: |
           pip uninstall -y databricks-cli || true
-          pip install --no-cache-dir databricks
+          python -m pip install --upgrade --user databricks
 
       - name: Configure Databricks CLI
         env:
@@ -92,4 +92,4 @@ jobs:
         run: |
           echo "Running pipeline validation tests..."
           # Add specific pipeline test commands here
-          databricks jobs list
+          python -m databricks.cli jobs list

@@ -19,11 +19,11 @@ jobs:
       - name: Install Databricks CLI
         run: |
           pip uninstall -y databricks-cli || true
-          pip install --no-cache-dir databricks
+          python -m pip install --upgrade --user databricks
 
       - name: Validate bundle configuration
         run: |
-          databricks bundle validate -C .
+          python -m databricks.cli bundle validate -C .
 
   deploy:
     needs: validate
@@ -54,4 +54,4 @@ jobs:
 
       - name: Deploy to Development
         run: |
-          databricks bundle deploy -C . --target dev
+          python -m databricks.cli bundle deploy -C . --target dev
