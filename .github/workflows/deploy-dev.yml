@@ -30,30 +30,24 @@ jobs:
 
       - name: Install Poetry
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          python -m pip install --upgrade pip
+          pip install poetry
 
       - name: Verify Poetry installation
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          poetry --version
+        run: poetry --version
 
       - name: Install Databricks CLI
         run: |
           curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
       - name: Validate bundle
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          databricks bundle validate -t dev
+        run: databricks bundle validate -t dev
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Deploy bundle to dev
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          databricks bundle deploy -t dev
+        run: databricks bundle deploy -t dev
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
