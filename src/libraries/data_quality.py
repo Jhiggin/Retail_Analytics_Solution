@@ -45,11 +45,13 @@ class DataQualityValidator:
                 "null_count": null_count,
                 "null_percentage": null_percentage,
                 "threshold": threshold,
-                "status": status
+                "status": status,
             }
 
             self.validation_results.append(result)
-            logger.info(f"{self.table_name}.{column}: {null_count} nulls ({null_percentage:.2%}) - {status}")
+            logger.info(
+                f"{self.table_name}.{column}: {null_count} nulls ({null_percentage:.2%}) - {status}"
+            )
 
         return passed
 
@@ -76,8 +78,8 @@ class DataQualityValidator:
             "total_rows": total_rows,
             "distinct_rows": distinct_rows,
             "duplicate_count": duplicate_count,
-            "status": status
-    }
+            "status": status,
+        }
 
         self.validation_results.append(result)
         logger.info(f"{self.table_name}: {duplicate_count} duplicates - {status}")
@@ -121,8 +123,8 @@ class DataQualityValidator:
             "min_value": min_value,
             "max_value": max_value,
             "invalid_count": invalid_rows,
-            "status": status
-    }
+            "status": status,
+        }
 
         self.validation_results.append(result)
         logger.info(f"{self.table_name}.{column}: {invalid_rows} out of range - {status}")
@@ -143,9 +145,7 @@ class DataQualityValidator:
         Returns:
             True if all foreign keys exist in reference, False otherwise
         """
-        orphaned = (
-            self.df.select(foreign_key).subtract(reference_df.select(reference_key)).count()
-        )
+        orphaned = self.df.select(foreign_key).subtract(reference_df.select(reference_key)).count()
 
         status = "PASS" if orphaned == 0 else "FAIL"
 
@@ -154,8 +154,8 @@ class DataQualityValidator:
             "check": "referential_integrity",
             "foreign_key": foreign_key,
             "orphaned_count": orphaned,
-            "status": status
-    }
+            "status": status,
+        }
 
         self.validation_results.append(result)
         logger.info(f"{self.table_name}.{foreign_key}: {orphaned} orphaned records - {status}")

@@ -1,7 +1,7 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC # DLT Gold Layer
-# MAGIC 
+# MAGIC
 # MAGIC This notebook defines business-level aggregation tables in the gold layer.
 
 # COMMAND ----------
@@ -17,22 +17,19 @@ from pyspark.sql.window import Window
 
 # COMMAND ----------
 
+
 @dlt.table(
     name="gold_daily_sales_summary",
     comment="Daily aggregated sales metrics by store and category",
-    table_properties={
-        "quality": "gold",
-        "pipelines.autoOptimize.managed": "true"
-    }
+    table_properties={"quality": "gold", "pipelines.autoOptimize.managed": "true"},
 )
 def gold_daily_sales_summary():
     sales = dlt.read("silver_sales")
     products = dlt.read("silver_products")
     customers = dlt.read("silver_customers")
-    
+
     return (
-        sales
-        .join(products, "product_id", "left")
+        sales.join(products, "product_id", "left")
         .join(customers, "customer_id", "left")
         .groupBy(
             "transaction_date",
@@ -52,6 +49,7 @@ def gold_daily_sales_summary():
         .withColumn("processed_timestamp", F.current_timestamp())
     )
 
+
 # COMMAND ----------
 
 # MAGIC %md
@@ -59,21 +57,18 @@ def gold_daily_sales_summary():
 
 # COMMAND ----------
 
+
 @dlt.table(
     name="gold_customer_ltv",
     comment="Customer lifetime value and engagement metrics",
-    table_properties={
-        "quality": "gold",
-        "pipelines.autoOptimize.managed": "true"
-    }
+    table_properties={"quality": "gold", "pipelines.autoOptimize.managed": "true"},
 )
 def gold_customer_ltv():
     sales = dlt.read("silver_sales")
     customers = dlt.read("silver_customers")
-    
+
     return (
-        sales
-        .join(customers, "customer_id", "left")
+        sales.join(customers, "customer_id", "left")
         .groupBy("customer_id", "customer_segment")
         .agg(
             F.count("transaction_id").alias("total_transactions"),
@@ -89,6 +84,7 @@ def gold_customer_ltv():
         .withColumn("processed_timestamp", F.current_timestamp())
     )
 
+
 # COMMAND ----------
 
 # MAGIC %md
@@ -96,21 +92,18 @@ def gold_customer_ltv():
 
 # COMMAND ----------
 
+
 @dlt.table(
     name="gold_product_performance",
     comment="Product sales performance and ranking metrics",
-    table_properties={
-        "quality": "gold",
-        "pipelines.autoOptimize.managed": "true"
-    }
+    table_properties={"quality": "gold", "pipelines.autoOptimize.managed": "true"},
 )
 def gold_product_performance():
     sales = dlt.read("silver_sales")
     products = dlt.read("silver_products")
-    
+
     result = (
-        sales
-        .join(products, "product_id", "left")
+        sales.join(products, "product_id", "left")
         .groupBy(
             "product_id",
             "product_name",
@@ -126,14 +119,13 @@ def gold_product_performance():
         )
         .withColumn(
             "revenue_rank",
-            F.dense_rank().over(
-                Window.partitionBy("category").orderBy(F.desc("total_revenue"))
-            ),
+            F.dense_rank().over(Window.partitionBy("category").orderBy(F.desc("total_revenue"))),
         )
         .withColumn("processed_timestamp", F.current_timestamp())
     )
-    
+
     return result
+
 
 # COMMAND ----------
 
@@ -142,20 +134,17 @@ def gold_product_performance():
 
 # COMMAND ----------
 
+
 @dlt.table(
     name="gold_monthly_trends",
     comment="Monthly sales trends and growth metrics",
-    table_properties={
-        "quality": "gold",
-        "pipelines.autoOptimize.managed": "true"
-    }
+    table_properties={"quality": "gold", "pipelines.autoOptimize.managed": "true"},
 )
 def gold_monthly_trends():
     sales = dlt.read("silver_sales")
-    
+
     return (
-        sales
-        .groupBy(
+        sales.groupBy(
             "transaction_year",
             "transaction_month",
             "transaction_quarter",
@@ -168,12 +157,13 @@ def gold_monthly_trends():
         )
         .withColumn(
             "revenue_growth",
-            (F.col("total_revenue") - F.lag("total_revenue").over(
-                Window.orderBy("transaction_year", "transaction_month")
-            ))
-            / F.lag("total_revenue").over(
-                Window.orderBy("transaction_year", "transaction_month")
+            (
+                F.col("total_revenue")
+                - F.lag("total_revenue").over(
+                    Window.orderBy("transaction_year", "transaction_month")
+                )
             )
+            / F.lag("total_revenue").over(Window.orderBy("transaction_year", "transaction_month"))
             * 100,
         )
         .withColumn("processed_timestamp", F.current_timestamp())

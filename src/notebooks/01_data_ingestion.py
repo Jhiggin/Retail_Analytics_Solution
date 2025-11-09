@@ -1,7 +1,7 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC # Data Ingestion - Bronze Layer
-# MAGIC 
+# MAGIC
 # MAGIC This notebook ingests raw data from source systems into the bronze layer.
 
 # COMMAND ----------
@@ -49,8 +49,8 @@ spark.sql(f"CREATE SCHEMA IF NOT EXISTS {catalog}.{schema}")
 # COMMAND ----------
 
 # Read raw sales data
-df_sales = (spark.read
-    .format("csv")
+df_sales = (
+    spark.read.format("csv")
     .option("header", "true")
     .option("inferSchema", "true")
     .load(f"{source_path}/sales/*.csv")
@@ -59,8 +59,8 @@ df_sales = (spark.read
 )
 
 # Write to bronze table
-(df_sales.write
-    .format("delta")
+(
+    df_sales.write.format("delta")
     .mode("append")
     .option("mergeSchema", "true")
     .saveAsTable(f"{catalog}.{schema}.sales_raw")
@@ -76,16 +76,16 @@ print(f"Ingested {df_sales.count()} sales records")
 # COMMAND ----------
 
 # Read raw customer data
-df_customers = (spark.read
-    .format("json")
+df_customers = (
+    spark.read.format("json")
     .load(f"{source_path}/customers/*.json")
     .withColumn("ingestion_timestamp", current_timestamp())
     .withColumn("source_file", input_file_name())
 )
 
 # Write to bronze table
-(df_customers.write
-    .format("delta")
+(
+    df_customers.write.format("delta")
     .mode("append")
     .option("mergeSchema", "true")
     .saveAsTable(f"{catalog}.{schema}.customers_raw")
@@ -101,16 +101,16 @@ print(f"Ingested {df_customers.count()} customer records")
 # COMMAND ----------
 
 # Read raw product data
-df_products = (spark.read
-    .format("parquet")
+df_products = (
+    spark.read.format("parquet")
     .load(f"{source_path}/products/*.parquet")
     .withColumn("ingestion_timestamp", current_timestamp())
     .withColumn("source_file", input_file_name())
 )
 
 # Write to bronze table
-(df_products.write
-    .format("delta")
+(
+    df_products.write.format("delta")
     .mode("append")
     .option("mergeSchema", "true")
     .saveAsTable(f"{catalog}.{schema}.products_raw")

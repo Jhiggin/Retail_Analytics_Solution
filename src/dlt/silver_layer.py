@@ -1,7 +1,7 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC # DLT Silver Layer
-# MAGIC 
+# MAGIC
 # MAGIC This notebook defines the silver layer tables with data quality constraints.
 
 # COMMAND ----------
@@ -17,13 +17,11 @@ from pyspark.sql.types import DecimalType
 
 # COMMAND ----------
 
+
 @dlt.table(
     name="silver_sales",
     comment="Cleaned and validated sales data",
-    table_properties={
-        "quality": "silver",
-        "pipelines.autoOptimize.managed": "true"
-    }
+    table_properties={"quality": "silver", "pipelines.autoOptimize.managed": "true"},
 )
 @dlt.expect_or_drop("valid_transaction_id", "transaction_id IS NOT NULL")
 @dlt.expect_or_drop("valid_amount", "amount > 0")
@@ -54,6 +52,7 @@ def silver_sales():
         )
     )
 
+
 # COMMAND ----------
 
 # MAGIC %md
@@ -61,13 +60,11 @@ def silver_sales():
 
 # COMMAND ----------
 
+
 @dlt.table(
     name="silver_customers",
     comment="Cleaned and validated customer data",
-    table_properties={
-        "quality": "silver",
-        "pipelines.autoOptimize.managed": "true"
-    }
+    table_properties={"quality": "silver", "pipelines.autoOptimize.managed": "true"},
 )
 @dlt.expect_or_drop("valid_customer_id", "customer_id IS NOT NULL")
 @dlt.expect_or_drop("valid_email", "email IS NOT NULL AND email LIKE '%@%'")
@@ -95,6 +92,7 @@ def silver_customers():
         )
     )
 
+
 # COMMAND ----------
 
 # MAGIC %md
@@ -102,13 +100,11 @@ def silver_customers():
 
 # COMMAND ----------
 
+
 @dlt.table(
     name="silver_products",
     comment="Cleaned and validated product data",
-    table_properties={
-        "quality": "silver",
-        "pipelines.autoOptimize.managed": "true"
-    }
+    table_properties={"quality": "silver", "pipelines.autoOptimize.managed": "true"},
 )
 @dlt.expect_or_drop("valid_product_id", "product_id IS NOT NULL")
 @dlt.expect_or_drop("valid_price", "price > 0")

@@ -1,7 +1,7 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC # DLT Bronze Layer
-# MAGIC 
+# MAGIC
 # MAGIC This notebook defines the bronze layer tables using Delta Live Tables.
 
 # COMMAND ----------
@@ -16,18 +16,15 @@ from pyspark.sql import functions as F
 
 # COMMAND ----------
 
+
 @dlt.table(
     name="bronze_sales",
     comment="Raw sales data ingested from source systems",
-    table_properties={
-        "quality": "bronze",
-        "pipelines.autoOptimize.managed": "true"
-    }
+    table_properties={"quality": "bronze", "pipelines.autoOptimize.managed": "true"},
 )
 def bronze_sales():
     return (
-        spark.readStream
-        .format("cloudFiles")
+        spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "csv")
         .option("cloudFiles.inferColumnTypes", "true")
         .option("cloudFiles.schemaLocation", "/tmp/schemas/sales")
@@ -36,6 +33,7 @@ def bronze_sales():
         .withColumn("source_file", F.input_file_name())
     )
 
+
 # COMMAND ----------
 
 # MAGIC %md
@@ -43,24 +41,22 @@ def bronze_sales():
 
 # COMMAND ----------
 
+
 @dlt.table(
     name="bronze_customers",
     comment="Raw customer data ingested from source systems",
-    table_properties={
-        "quality": "bronze",
-        "pipelines.autoOptimize.managed": "true"
-    }
+    table_properties={"quality": "bronze", "pipelines.autoOptimize.managed": "true"},
 )
 def bronze_customers():
     return (
-        spark.readStream
-        .format("cloudFiles")
+        spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "json")
         .option("cloudFiles.schemaLocation", "/tmp/schemas/customers")
         .load("/mnt/raw/retail_data/customers/")
         .withColumn("ingestion_timestamp", F.current_timestamp())
         .withColumn("source_file", F.input_file_name())
     )
+
 
 # COMMAND ----------
 
@@ -69,18 +65,15 @@ def bronze_customers():
 
 # COMMAND ----------
 
+
 @dlt.table(
     name="bronze_products",
     comment="Raw product data ingested from source systems",
-    table_properties={
-        "quality": "bronze",
-        "pipelines.autoOptimize.managed": "true"
-    }
+    table_properties={"quality": "bronze", "pipelines.autoOptimize.managed": "true"},
 )
 def bronze_products():
     return (
-        spark.readStream
-        .format("cloudFiles")
+        spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "parquet")
         .option("cloudFiles.schemaLocation", "/tmp/schemas/products")
         .load("/mnt/raw/retail_data/products/")

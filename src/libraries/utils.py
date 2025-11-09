@@ -144,11 +144,7 @@ def get_table_stats(spark, table_name: str) -> dict:
     """
     df = spark.table(table_name)
 
-    stats = {
-        "row_count": df.count(),
-        "column_count": len(df.columns),
-        "columns": df.columns
-    }
+    stats = {"row_count": df.count(), "column_count": len(df.columns), "columns": df.columns}
 
     logger.info(f"Table stats for {table_name}: {stats}")
     return stats

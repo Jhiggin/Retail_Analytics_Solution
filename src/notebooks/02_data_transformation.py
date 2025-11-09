@@ -1,7 +1,7 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC # Data Transformation - Silver Layer
-# MAGIC 
+# MAGIC
 # MAGIC This notebook transforms bronze data into cleaned and validated silver layer tables.
 
 # COMMAND ----------
@@ -42,8 +42,8 @@ spark.sql(f"CREATE SCHEMA IF NOT EXISTS {catalog}.{silver_schema}")
 df_sales_bronze = spark.table(f"{catalog}.{bronze_schema}.sales_raw")
 
 # Clean and transform
-df_sales_silver = (df_sales_bronze
-    .dropDuplicates(["transaction_id", "transaction_date"])
+df_sales_silver = (
+    df_sales_bronze.dropDuplicates(["transaction_id", "transaction_date"])
     .filter(col("transaction_date").isNotNull())
     .filter(col("amount") > 0)
     .withColumn("transaction_date", to_date(col("transaction_date")))
@@ -63,13 +63,13 @@ df_sales_silver = (df_sales_bronze
         "amount",
         "discount",
         "store_id",
-        "processed_timestamp"
+        "processed_timestamp",
     )
 )
 
 # Write to silver table
-(df_sales_silver.write
-    .format("delta")
+(
+    df_sales_silver.write.format("delta")
     .mode("overwrite")
     .option("overwriteSchema", "true")
     .saveAsTable(f"{catalog}.{silver_schema}.sales")
@@ -88,8 +88,8 @@ print(f"Transformed {df_sales_silver.count()} sales records")
 df_customers_bronze = spark.table(f"{catalog}.{bronze_schema}.customers_raw")
 
 # Clean and transform
-df_customers_silver = (df_customers_bronze
-    .dropDuplicates(["customer_id"])
+df_customers_silver = (
+    df_customers_bronze.dropDuplicates(["customer_id"])
     .filter(col("customer_id").isNotNull())
     .withColumn("email", lower(trim(col("email"))))
     .withColumn("phone", regexp_replace(col("phone"), "[^0-9]", ""))
@@ -107,13 +107,13 @@ df_customers_silver = (df_customers_bronze
         "zip_code",
         "registration_date",
         "customer_segment",
-        "processed_timestamp"
+        "processed_timestamp",
     )
 )
 
 # Write to silver table
-(df_customers_silver.write
-    .format("delta")
+(
+    df_customers_silver.write.format("delta")
     .mode("overwrite")
     .option("overwriteSchema", "true")
     .saveAsTable(f"{catalog}.{silver_schema}.customers")
@@ -132,8 +132,8 @@ print(f"Transformed {df_customers_silver.count()} customer records")
 df_products_bronze = spark.table(f"{catalog}.{bronze_schema}.products_raw")
 
 # Clean and transform
-df_products_silver = (df_products_bronze
-    .dropDuplicates(["product_id"])
+df_products_silver = (
+    df_products_bronze.dropDuplicates(["product_id"])
     .filter(col("product_id").isNotNull())
     .withColumn("product_name", trim(col("product_name")))
     .withColumn("category", trim(col("category")))
@@ -148,13 +148,13 @@ df_products_silver = (df_products_bronze
         "price",
         "cost",
         "supplier_id",
-        "processed_timestamp"
+        "processed_timestamp",
     )
 )
 
 # Write to silver table
-(df_products_silver.write
-    .format("delta")
+(
+    df_products_silver.write.format("delta")
     .mode("overwrite")
     .option("overwriteSchema", "true")
     .saveAsTable(f"{catalog}.{silver_schema}.products")
