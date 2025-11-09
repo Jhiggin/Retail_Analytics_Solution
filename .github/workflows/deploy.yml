@@ -21,12 +21,14 @@ jobs:
 
       - name: Install Databricks CLI
         run: |
-          pip uninstall -y databricks-cli || true
-          python -m pip install --upgrade --user databricks
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
       - name: Validate bundle configuration
         run: |
-          python -m databricks.cli bundle validate -C .
+          databricks bundle validate -t dev
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
   deploy:
     needs: validate
@@ -42,23 +44,14 @@ jobs:
 
       - name: Install Databricks CLI
         run: |
-          pip uninstall -y databricks-cli || true
-          python -m pip install --upgrade --user databricks
-
-      - name: Configure Databricks CLI
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-        run: |
-          mkdir -p ~/.databricks
-          cat > ~/.databricks/default << EOF
-          host = $DATABRICKS_HOST
-          token = $DATABRICKS_TOKEN
-          EOF
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
       - name: Deploy to Production
         run: |
-          python -m databricks.cli bundle deploy -C . --target prod
+          databricks bundle deploy -t prod
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
   test-pipelines:
     needs: deploy
@@ -74,22 +67,12 @@ jobs:
 
       - name: Install Databricks CLI
         run: |
-          pip uninstall -y databricks-cli || true
-          python -m pip install --upgrade --user databricks
-
-      - name: Configure Databricks CLI
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-        run: |
-          mkdir -p ~/.databricks
-          cat > ~/.databricks/default << EOF
-          host = $DATABRICKS_HOST
-          token = $DATABRICKS_TOKEN
-          EOF
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
       - name: Run pipeline tests
         run: |
           echo "Running pipeline validation tests..."
-          # Add specific pipeline test commands here
-          python -m databricks.cli jobs list
+          databricks jobs list
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
