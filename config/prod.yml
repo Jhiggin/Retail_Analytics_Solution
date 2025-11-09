@@ -1,0 +1,26 @@
+# Production Environment Configuration
+
+# Databricks workspace
+databricks_host_prod: "https://your-workspace-prod.cloud.databricks.com"
+
+# Unity Catalog
+catalog_name: "retail_analytics_prod"
+schema_name: "analytics"
+
+# Service Principal
+service_principal_prod: "sp-databricks-prod@yourdomain.com"
+
+# Notification settings
+notification_email: "data-ops@example.com"
+
+# Data paths
+raw_data_path: "/mnt/prod/raw_data"
+checkpoint_path: "/mnt/prod/checkpoints"
+
+# Job configuration
+job_timeout: 7200  # 2 hours
+max_retries: 3
+
+# High availability settings
+max_concurrent_runs: 1
+retry_on_timeout: true

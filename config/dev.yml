@@ -1,0 +1,23 @@
+# Development Environment Configuration
+
+# Databricks workspace
+databricks_host_dev: "https://your-workspace-dev.cloud.databricks.com"
+
+# Unity Catalog
+catalog_name: "retail_analytics_dev"
+schema_name: "analytics"
+
+# Service Principal (for testing service principal auth)
+service_principal_staging: ""
+service_principal_prod: ""
+
+# Notification settings
+notification_email: "dev-team@example.com"
+
+# Data paths
+raw_data_path: "/mnt/dev/raw_data"
+checkpoint_path: "/mnt/dev/checkpoints"
+
+# Job configuration overrides
+job_timeout: 1800  # 30 minutes for dev
+max_retries: 1
