@@ -27,7 +27,6 @@ targets:
     mode: development
     default: true
     workspace:
-      host: ${var.databricks_host_dev}
       root_path: "~/.bundle/${bundle.name}/dev"
     resources:
       jobs:
@@ -45,7 +44,6 @@ targets:
   staging:
     mode: production
     workspace:
-      host: ${var.databricks_host_staging}
       root_path: /Shared/.bundle/${bundle.name}/staging
     resources:
       jobs:
@@ -67,7 +65,6 @@ targets:
   prod:
     mode: production
     workspace:
-      host: ${var.databricks_host_prod}
       root_path: /Shared/.bundle/${bundle.name}/prod
     resources:
       jobs:
@@ -88,16 +85,12 @@ targets:
 
 # Variables that can be referenced throughout the bundle
 variables:
-  databricks_host_dev:
-    description: "Databricks workspace URL for dev"
-  databricks_host_staging:
-    description: "Databricks workspace URL for staging"
-  databricks_host_prod:
-    description: "Databricks workspace URL for prod"
   service_principal_staging:
     description: "Service principal for staging deployments"
+    default: ""
   service_principal_prod:
     description: "Service principal for production deployments"
+    default: ""
   catalog_name:
     description: "Unity Catalog name"
     default: "retail_analytics"
