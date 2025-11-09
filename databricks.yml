@@ -17,7 +17,7 @@ workspace:
 artifacts:
   default:
     type: whl
-    build: python -m poetry build
+    build: poetry build
     path: .
 
 # Targets define different deployment environments
