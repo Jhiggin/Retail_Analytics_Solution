@@ -18,8 +18,8 @@ jobs:
 
       - name: Install Databricks CLI
         run: |
-          pip uninstall -y databricks-cli
-          pip install databricks
+          pip uninstall -y databricks-cli || true
+          pip install --no-cache-dir databricks
 
       - name: Validate bundle configuration
         run: |
@@ -38,8 +38,8 @@ jobs:
 
       - name: Install Databricks CLI
         run: |
-          pip uninstall -y databricks-cli
-          pip install databricks
+          pip uninstall -y databricks-cli || true
+          pip install --no-cache-dir databricks
 
       - name: Configure Databricks CLI
         env:
