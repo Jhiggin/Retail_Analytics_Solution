@@ -7,8 +7,8 @@
 # COMMAND ----------
 
 import dlt
-from pyspark.sql.functions import *
-from pyspark.sql.types import *
+from pyspark.sql import functions as F
+from pyspark.sql.types import DecimalType
 
 # COMMAND ----------
 
@@ -32,26 +32,26 @@ from pyspark.sql.types import *
 def silver_sales():
     return (
         dlt.read_stream("bronze_sales")
-            .withColumn("transaction_date", to_date(col("transaction_date")))
-            .withColumn("transaction_year", year(col("transaction_date")))
-            .withColumn("transaction_month", month(col("transaction_date")))
-            .withColumn("transaction_quarter", quarter(col("transaction_date")))
-            .withColumn("amount", col("amount").cast(DecimalType(10, 2)))
-            .withColumn("processed_timestamp", current_timestamp())
-            .select(
-                "transaction_id",
-                "customer_id",
-                "product_id",
-                "transaction_date",
-                "transaction_year",
-                "transaction_month",
-                "transaction_quarter",
-                "quantity",
-                "amount",
-                "discount",
-                "store_id",
-                "processed_timestamp"
-            )
+        .withColumn("transaction_date", F.to_date(F.col("transaction_date")))
+        .withColumn("transaction_year", F.year(F.col("transaction_date")))
+        .withColumn("transaction_month", F.month(F.col("transaction_date")))
+        .withColumn("transaction_quarter", F.quarter(F.col("transaction_date")))
+        .withColumn("amount", F.col("amount").cast(DecimalType(10, 2)))
+        .withColumn("processed_timestamp", F.current_timestamp())
+        .select(
+            "transaction_id",
+            "customer_id",
+            "product_id",
+            "transaction_date",
+            "transaction_year",
+            "transaction_month",
+            "transaction_quarter",
+            "quantity",
+            "amount",
+            "discount",
+            "store_id",
+            "processed_timestamp",
+        )
     )
 
 # COMMAND ----------
@@ -75,24 +75,24 @@ def silver_sales():
 def silver_customers():
     return (
         dlt.read_stream("bronze_customers")
-            .withColumn("email", lower(trim(col("email"))))
-            .withColumn("phone", regexp_replace(col("phone"), "[^0-9]", ""))
-            .withColumn("registration_date", to_date(col("registration_date")))
-            .withColumn("processed_timestamp", current_timestamp())
-            .select(
-                "customer_id",
-                "first_name",
-                "last_name",
-                "email",
-                "phone",
-                "address",
-                "city",
-                "state",
-                "zip_code",
-                "registration_date",
-                "customer_segment",
-                "processed_timestamp"
-            )
+        .withColumn("email", F.lower(F.trim(F.col("email"))))
+        .withColumn("phone", F.regexp_replace(F.col("phone"), "[^0-9]", ""))
+        .withColumn("registration_date", F.to_date(F.col("registration_date")))
+        .withColumn("processed_timestamp", F.current_timestamp())
+        .select(
+            "customer_id",
+            "first_name",
+            "last_name",
+            "email",
+            "phone",
+            "address",
+            "city",
+            "state",
+            "zip_code",
+            "registration_date",
+            "customer_segment",
+            "processed_timestamp",
+        )
     )
 
 # COMMAND ----------
@@ -116,20 +116,20 @@ def silver_customers():
 def silver_products():
     return (
         dlt.read_stream("bronze_products")
-            .withColumn("product_name", trim(col("product_name")))
-            .withColumn("category", trim(col("category")))
-            .withColumn("price", col("price").cast(DecimalType(10, 2)))
-            .withColumn("cost", col("cost").cast(DecimalType(10, 2)))
-            .withColumn("processed_timestamp", current_timestamp())
-            .select(
-                "product_id",
-                "product_name",
-                "category",
-                "subcategory",
-                "brand",
-                "price",
-                "cost",
-                "supplier_id",
-                "processed_timestamp"
-            )
+        .withColumn("product_name", F.trim(F.col("product_name")))
+        .withColumn("category", F.trim(F.col("category")))
+        .withColumn("price", F.col("price").cast(DecimalType(10, 2)))
+        .withColumn("cost", F.col("cost").cast(DecimalType(10, 2)))
+        .withColumn("processed_timestamp", F.current_timestamp())
+        .select(
+            "product_id",
+            "product_name",
+            "category",
+            "subcategory",
+            "brand",
+            "price",
+            "cost",
+            "supplier_id",
+            "processed_timestamp",
+        )
     )

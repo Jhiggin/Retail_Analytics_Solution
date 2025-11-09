@@ -7,7 +7,7 @@
 # COMMAND ----------
 
 import dlt
-from pyspark.sql.functions import *
+from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
 # COMMAND ----------
@@ -32,24 +32,24 @@ def gold_daily_sales_summary():
     
     return (
         sales
-            .join(products, "product_id", "left")
-            .join(customers, "customer_id", "left")
-            .groupBy(
-                "transaction_date",
-                "transaction_year",
-                "transaction_month",
-                "store_id",
-                "category"
-            )
-            .agg(
-                count("transaction_id").alias("total_transactions"),
-                countDistinct("customer_id").alias("unique_customers"),
-                sum("quantity").alias("total_quantity"),
-                sum("amount").alias("total_revenue"),
-                avg("amount").alias("avg_transaction_value"),
-                sum("discount").alias("total_discount")
-            )
-            .withColumn("processed_timestamp", current_timestamp())
+        .join(products, "product_id", "left")
+        .join(customers, "customer_id", "left")
+        .groupBy(
+            "transaction_date",
+            "transaction_year",
+            "transaction_month",
+            "store_id",
+            "category",
+        )
+        .agg(
+            F.count("transaction_id").alias("total_transactions"),
+            F.countDistinct("customer_id").alias("unique_customers"),
+            F.sum("quantity").alias("total_quantity"),
+            F.sum("amount").alias("total_revenue"),
+            F.avg("amount").alias("avg_transaction_value"),
+            F.sum("discount").alias("total_discount"),
+        )
+        .withColumn("processed_timestamp", F.current_timestamp())
     )
 
 # COMMAND ----------
@@ -73,20 +73,20 @@ def gold_customer_ltv():
     
     return (
         sales
-            .join(customers, "customer_id", "left")
-            .groupBy("customer_id", "customer_segment")
-            .agg(
-                count("transaction_id").alias("total_transactions"),
-                sum("amount").alias("lifetime_value"),
-                avg("amount").alias("avg_order_value"),
-                min("transaction_date").alias("first_purchase_date"),
-                max("transaction_date").alias("last_purchase_date")
-            )
-            .withColumn(
-                "customer_tenure_days",
-                datediff(col("last_purchase_date"), col("first_purchase_date"))
-            )
-            .withColumn("processed_timestamp", current_timestamp())
+        .join(customers, "customer_id", "left")
+        .groupBy("customer_id", "customer_segment")
+        .agg(
+            F.count("transaction_id").alias("total_transactions"),
+            F.sum("amount").alias("lifetime_value"),
+            F.avg("amount").alias("avg_order_value"),
+            F.min("transaction_date").alias("first_purchase_date"),
+            F.max("transaction_date").alias("last_purchase_date"),
+        )
+        .withColumn(
+            "customer_tenure_days",
+            F.datediff(F.col("last_purchase_date"), F.col("first_purchase_date")),
+        )
+        .withColumn("processed_timestamp", F.current_timestamp())
     )
 
 # COMMAND ----------
@@ -110,25 +110,27 @@ def gold_product_performance():
     
     result = (
         sales
-            .join(products, "product_id", "left")
-            .groupBy(
-                "product_id",
-                "product_name",
-                "category",
-                "subcategory",
-                "brand"
-            )
-            .agg(
-                count("transaction_id").alias("total_transactions"),
-                sum("quantity").alias("total_quantity_sold"),
-                sum("amount").alias("total_revenue"),
-                avg(col("amount") / col("quantity")).alias("avg_unit_price")
-            )
-            .withColumn(
-                "revenue_rank",
-                dense_rank().over(Window.partitionBy("category").orderBy(desc("total_revenue")))
-            )
-            .withColumn("processed_timestamp", current_timestamp())
+        .join(products, "product_id", "left")
+        .groupBy(
+            "product_id",
+            "product_name",
+            "category",
+            "subcategory",
+            "brand",
+        )
+        .agg(
+            F.count("transaction_id").alias("total_transactions"),
+            F.sum("quantity").alias("total_quantity_sold"),
+            F.sum("amount").alias("total_revenue"),
+            F.avg(F.col("amount") / F.col("quantity")).alias("avg_unit_price"),
+        )
+        .withColumn(
+            "revenue_rank",
+            F.dense_rank().over(
+                Window.partitionBy("category").orderBy(F.desc("total_revenue"))
+            ),
+        )
+        .withColumn("processed_timestamp", F.current_timestamp())
     )
     
     return result
@@ -153,25 +155,27 @@ def gold_monthly_trends():
     
     return (
         sales
-            .groupBy(
-                "transaction_year",
-                "transaction_month",
-                "transaction_quarter"
+        .groupBy(
+            "transaction_year",
+            "transaction_month",
+            "transaction_quarter",
+        )
+        .agg(
+            F.count("transaction_id").alias("total_transactions"),
+            F.countDistinct("customer_id").alias("unique_customers"),
+            F.sum("amount").alias("total_revenue"),
+            F.avg("amount").alias("avg_transaction_value"),
+        )
+        .withColumn(
+            "revenue_growth",
+            (F.col("total_revenue") - F.lag("total_revenue").over(
+                Window.orderBy("transaction_year", "transaction_month")
+            ))
+            / F.lag("total_revenue").over(
+                Window.orderBy("transaction_year", "transaction_month")
             )
-            .agg(
-                count("transaction_id").alias("total_transactions"),
-                countDistinct("customer_id").alias("unique_customers"),
-                sum("amount").alias("total_revenue"),
-                avg("amount").alias("avg_transaction_value")
-            )
-            .withColumn(
-                "revenue_growth",
-                (col("total_revenue") - lag("total_revenue").over(
-                    Window.orderBy("transaction_year", "transaction_month")
-                )) / lag("total_revenue").over(
-                    Window.orderBy("transaction_year", "transaction_month")
-                ) * 100
-            )
-            .withColumn("processed_timestamp", current_timestamp())
-            .orderBy("transaction_year", "transaction_month")
+            * 100,
+        )
+        .withColumn("processed_timestamp", F.current_timestamp())
+        .orderBy("transaction_year", "transaction_month")
     )

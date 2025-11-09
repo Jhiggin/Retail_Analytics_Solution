@@ -7,7 +7,7 @@
 # COMMAND ----------
 
 import dlt
-from pyspark.sql.functions import *
+from pyspark.sql import functions as F
 
 # COMMAND ----------
 
@@ -27,13 +27,13 @@ from pyspark.sql.functions import *
 def bronze_sales():
     return (
         spark.readStream
-            .format("cloudFiles")
-            .option("cloudFiles.format", "csv")
-            .option("cloudFiles.inferColumnTypes", "true")
-            .option("cloudFiles.schemaLocation", "/tmp/schemas/sales")
-            .load("/mnt/raw/retail_data/sales/")
-            .withColumn("ingestion_timestamp", current_timestamp())
-            .withColumn("source_file", input_file_name())
+        .format("cloudFiles")
+        .option("cloudFiles.format", "csv")
+        .option("cloudFiles.inferColumnTypes", "true")
+        .option("cloudFiles.schemaLocation", "/tmp/schemas/sales")
+        .load("/mnt/raw/retail_data/sales/")
+        .withColumn("ingestion_timestamp", F.current_timestamp())
+        .withColumn("source_file", F.input_file_name())
     )
 
 # COMMAND ----------
@@ -54,12 +54,12 @@ def bronze_sales():
 def bronze_customers():
     return (
         spark.readStream
-            .format("cloudFiles")
-            .option("cloudFiles.format", "json")
-            .option("cloudFiles.schemaLocation", "/tmp/schemas/customers")
-            .load("/mnt/raw/retail_data/customers/")
-            .withColumn("ingestion_timestamp", current_timestamp())
-            .withColumn("source_file", input_file_name())
+        .format("cloudFiles")
+        .option("cloudFiles.format", "json")
+        .option("cloudFiles.schemaLocation", "/tmp/schemas/customers")
+        .load("/mnt/raw/retail_data/customers/")
+        .withColumn("ingestion_timestamp", F.current_timestamp())
+        .withColumn("source_file", F.input_file_name())
     )
 
 # COMMAND ----------
@@ -80,10 +80,10 @@ def bronze_customers():
 def bronze_products():
     return (
         spark.readStream
-            .format("cloudFiles")
-            .option("cloudFiles.format", "parquet")
-            .option("cloudFiles.schemaLocation", "/tmp/schemas/products")
-            .load("/mnt/raw/retail_data/products/")
-            .withColumn("ingestion_timestamp", current_timestamp())
-            .withColumn("source_file", input_file_name())
+        .format("cloudFiles")
+        .option("cloudFiles.format", "parquet")
+        .option("cloudFiles.schemaLocation", "/tmp/schemas/products")
+        .load("/mnt/raw/retail_data/products/")
+        .withColumn("ingestion_timestamp", F.current_timestamp())
+        .withColumn("source_file", F.input_file_name())
     )
