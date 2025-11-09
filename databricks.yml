@@ -12,6 +12,9 @@ include:
 variables:
   catalog:
     description: The catalog to use
+  schema:
+    description: The schema to use (retail_analytics)
+    default: retail_analytics
   compute_cluster_id:
     description: Compute cluster ID for running notebooks
     default: ""
