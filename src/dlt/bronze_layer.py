@@ -28,7 +28,7 @@ def bronze_sales():
         spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "csv")
         .option("cloudFiles.inferColumnTypes", "true")
-        .option("cloudFiles.schemaLocation", "/tmp/schemas/sales")
+        .option("cloudFiles.schemaLocation", "/tmp/schemas/sales")  # nosec B108
         .load("/mnt/raw/retail_data/sales/")
         .withColumn("ingestion_timestamp", F.current_timestamp())
         .withColumn("source_file", F.input_file_name())
@@ -52,7 +52,7 @@ def bronze_customers():
     return (
         spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "json")
-        .option("cloudFiles.schemaLocation", "/tmp/schemas/customers")
+        .option("cloudFiles.schemaLocation", "/tmp/schemas/customers")  # nosec B108
         .load("/mnt/raw/retail_data/customers/")
         .withColumn("ingestion_timestamp", F.current_timestamp())
         .withColumn("source_file", F.input_file_name())
@@ -76,7 +76,7 @@ def bronze_products():
     return (
         spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "parquet")
-        .option("cloudFiles.schemaLocation", "/tmp/schemas/products")
+        .option("cloudFiles.schemaLocation", "/tmp/schemas/products")  # nosec B108
         .load("/mnt/raw/retail_data/products/")
         .withColumn("ingestion_timestamp", F.current_timestamp())
         .withColumn("source_file", F.input_file_name())

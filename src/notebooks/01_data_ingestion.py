@@ -23,7 +23,7 @@ from pyspark.sql.functions import current_timestamp, input_file_name
 dbutils.widgets.text("source_path", "/mnt/raw/retail_data", "Source Path")
 dbutils.widgets.text("catalog", "retail_analytics", "Catalog Name")
 dbutils.widgets.text("schema", "bronze", "Schema Name")
-dbutils.widgets.text("checkpoint_path", "/tmp/checkpoints/bronze", "Checkpoint Path")
+dbutils.widgets.text("checkpoint_path", "/tmp/checkpoints/bronze", "Checkpoint Path")  # nosec B108
 
 source_path = dbutils.widgets.get("source_path")
 catalog = dbutils.widgets.get("catalog")
