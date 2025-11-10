@@ -24,6 +24,17 @@ jobs:
           python -m py_compile notebooks/*.py
           echo "All notebooks passed syntax validation"
 
+      - name: Install Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Validate Databricks Bundle
+        run: |
+          databricks bundle validate --target prod
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
   deploy:
     needs: validate
     runs-on: ubuntu-latest
@@ -31,26 +42,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
       - name: Install Databricks CLI
         run: |
           curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
-      - name: Deploy notebooks to Databricks
+      - name: Deploy Databricks Bundle (Prod Target)
         run: |
-          databricks workspace import-dir ./notebooks /Retail_Analytics_Solution/notebooks --overwrite
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-
-      - name: Deploy job configurations
-        run: |
-          echo "Notebooks deployed successfully to production workspace"
-          echo "Next: Jobs configured in Databricks Assets"
+          databricks bundle deploy --target prod
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}

@@ -6,10 +6,11 @@
 # COMMAND
 
 from pyspark.sql import functions as F
+from pyspark.sql.window import Window
 
 # COMMAND
 
-CATALOG = spark.conf.get("catalog", "retail_dev")
+CATALOG = dbutils.widgets.get("catalog") if dbutils.widgets.get("catalog") else spark.conf.get("catalog", "retail_dev")
 SILVER_SCHEMA = "silver"
 GOLD_SCHEMA = "gold"
 
@@ -33,7 +34,7 @@ display(df_stores.limit(5))
 
 df_dim_store = (df_stores
     .withColumn("StoreKey", F.row_number().over(
-        F.Window.partitionBy().orderBy(F.col("StoreID"))
+        Window.partitionBy().orderBy(F.col("StoreID"))
     ))
     .select(
         F.col("StoreKey"),

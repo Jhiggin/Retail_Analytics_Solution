@@ -9,7 +9,7 @@ from pyspark.sql import functions as F
 
 # COMMAND
 
-CATALOG = spark.conf.get("catalog", "retail_dev")
+CATALOG = dbutils.widgets.get("catalog") if dbutils.widgets.get("catalog") else spark.conf.get("catalog", "retail_dev")
 GOLD_SCHEMA = "gold"
 
 # COMMAND

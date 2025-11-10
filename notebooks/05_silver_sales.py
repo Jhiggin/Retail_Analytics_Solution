@@ -10,7 +10,7 @@ from pyspark.sql import functions as F
 # COMMAND
 
 # Configuration
-CATALOG = spark.conf.get("catalog", "retail_dev")
+CATALOG = dbutils.widgets.get("catalog") if dbutils.widgets.get("catalog") else spark.conf.get("catalog", "retail_dev")
 BRONZE_SCHEMA = "bronze"
 SILVER_SCHEMA = "silver"
 

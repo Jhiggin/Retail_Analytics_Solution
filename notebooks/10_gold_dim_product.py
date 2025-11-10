@@ -6,10 +6,11 @@
 # COMMAND
 
 from pyspark.sql import functions as F
+from pyspark.sql.window import Window
 
 # COMMAND
 
-CATALOG = spark.conf.get("catalog", "retail_dev")
+CATALOG = dbutils.widgets.get("catalog") if dbutils.widgets.get("catalog") else spark.conf.get("catalog", "retail_dev")
 SILVER_SCHEMA = "silver"
 GOLD_SCHEMA = "gold"
 
@@ -34,7 +35,7 @@ display(df_products.limit(5))
 # Add surrogate key (in real scenario, would use a sequence or hash)
 df_dim_product = (df_products
     .withColumn("ProductKey", F.row_number().over(
-        F.Window.partitionBy().orderBy(F.col("ProductID"))
+        Window.partitionBy().orderBy(F.col("ProductID"))
     ))
     .select(
         F.col("ProductKey"),

@@ -11,7 +11,7 @@ from pyspark.sql import functions as F
 
 # Configuration
 ADLS_BASE_PATH = "abfss://data@dbmetastorecs.dfs.core.windows.net/retail-in"
-CATALOG = spark.conf.get("catalog", "retail_dev")
+CATALOG = dbutils.widgets.get("catalog") if dbutils.widgets.get("catalog") else spark.conf.get("catalog", "retail_dev")
 BRONZE_SCHEMA = "bronze"
 
 # COMMAND

@@ -10,9 +10,9 @@ from pyspark.sql.types import *
 
 # COMMAND
 
-# Configuration
+# Configuration from orchestration job parameters (or defaults)
 ADLS_BASE_PATH = "abfss://data@dbmetastorecs.dfs.core.windows.net/retail-in"
-CATALOG = spark.conf.get("catalog", "retail_dev")
+CATALOG = dbutils.widgets.get("catalog") if dbutils.widgets.get("catalog") else spark.conf.get("catalog", "retail_dev")
 BRONZE_SCHEMA = "bronze"
 
 # COMMAND
