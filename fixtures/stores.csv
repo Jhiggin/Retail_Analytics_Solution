@@ -1,0 +1,11 @@
+StoreID,StoreName,Region,StoreType,SquareFootage
+S001,Downtown Tech Hub,Northeast,Premium,8500
+S002,Mall Electronics,Midwest,Standard,6200
+S003,West Coast Outlet,West,Outlet,5000
+S004,South District Store,South,Standard,6800
+S005,Northern Express,Northeast,Express,3500
+S006,Central Commerce,Midwest,Premium,9200
+S007,Coastal Retail,West,Standard,7100
+S008,Southern Gateway,South,Express,4000
+S009,Metro Center,Northeast,Premium,10000
+S010,Suburban Square,Midwest,Standard,5500
